@@ -1,4 +1,4 @@
-This is the source code for an ESP8266 that is controling an RGBWW light.
+This is the code that is running on an ESP8266 that is controling an RGBWW light.
 
 API description:
 
