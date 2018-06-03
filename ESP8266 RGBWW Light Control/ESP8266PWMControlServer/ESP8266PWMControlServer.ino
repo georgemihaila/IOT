@@ -5,7 +5,7 @@
 #define PWM_Max 1023
 
 #define SSID "George"
-#define Password "$ComplicatedHOST"
+#define Password "$"
 
 ESP8266WebServer server(80);;
 
