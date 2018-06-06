@@ -13,7 +13,7 @@ public class API {
         public static final int PWM_Min = 0;
         public static final int PWM_Max = 1023;
         public static final int LEDCount = 5;
-        public enum simpleCommand { turnAllLEDsOn, turnAllLEDsOff, restart }
+        public enum simpleCommand { turnAllLEDsOn, turnAllLEDsOff, restart, switchVumeter }
         public enum led { cw, r, g, b, ww }
 
         //endregion
@@ -32,6 +32,9 @@ public class API {
                 case restart:
                     requestString += "restart";
                     break;
+                case switchVumeter:
+                    requestString += "vumeter";
+                    break;
             }
             return requestString;
         }
@@ -47,7 +50,7 @@ public class API {
         }
 
         public static String createPWMRequestString(SeekBar seekBar){
-            return ESP8266RGBWWIpAddress + "pwm?" + ledName_Short[(int)seekBar.getTag()] + "=" + (1023 - seekBar.getProgress());
+            return ESP8266RGBWWIpAddress + "pwm?" + ledName_Short[(int)seekBar.getTag()] + "=" + (seekBar.getProgress());
         }
 
         //endregion

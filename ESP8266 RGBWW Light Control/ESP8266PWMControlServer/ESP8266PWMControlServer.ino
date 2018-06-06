@@ -15,6 +15,8 @@ int pwmValues[] = { 0, 0, 0, 0, 0 };
 float vuMin = 56;
 float vuMax = 228;
 bool vumeter = false;
+int vumeterLoops = 150;
+int vumeterFilter[] = { 0, 33, 40, 55, 46 };
 
 void ydelayms(int millisecondDelay) {
 	delay(millisecondDelay);
@@ -27,13 +29,13 @@ void ydelayus(int microsecondDelay) {
 }
 
 void turnOnLED(int index) {
-	analogWrite(ledPins[index], PWM_Min);
-	pwmValues[index] = PWM_Min;
+	analogWrite(ledPins[index], PWM_Max);
+	pwmValues[index] = PWM_Max;
 }
 
 void turnOffLED(int index) {
-	analogWrite(ledPins[index], PWM_Max);
-	pwmValues[index] = PWM_Max;
+	analogWrite(ledPins[index], PWM_Min);
+	pwmValues[index] = PWM_Min;
 }
 
 void turnOffAllLEDs() {
@@ -153,6 +155,24 @@ void setVumeter_Server() {
 		else if (argName == "max") {
 			vuMax = argAsInt;
 		}
+		else if (argName == "vumeterloops") {
+			vumeterLoops = argAsInt;
+		}
+		else if (argName == "vufilter0") {
+			vumeterFilter[0] = argAsInt;
+		}
+		else if (argName == "vufilter1") {
+			vumeterFilter[1] = argAsInt;
+		}
+		else if (argName == "vufilter2") {
+			vumeterFilter[2] = argAsInt;
+		}
+		else if (argName == "vufilter3") {
+			vumeterFilter[3] = argAsInt;
+		}
+		else if (argName == "vufilter4") {
+			vumeterFilter[4] = argAsInt;
+		}
 	}
 	server.send(200, "text/plain", "set vumeter values");
 }
@@ -219,7 +239,7 @@ void vuMeter() {
 		analogWrite(ledPins[0], PWM_Min);
 		
 	}
-	if (current >= abs(delta * 3.3 / 5)) {
+	if (current >= abs(delta * (vumeterFilter[0] / 10) / 5)) {
 		analogWrite(ledPins[1], mapValue(vuMin, vuMax, current, PWM_Min, PWM_Max));
 		
 	}
@@ -227,7 +247,7 @@ void vuMeter() {
 		analogWrite(ledPins[1], PWM_Min);
 		
 	}
-	if (current >= abs(delta * 4.4 / 5)) {
+	if (current >= abs(delta * (vumeterFilter[1] / 10) / 5)) {
 		analogWrite(ledPins[2], mapValue(vuMin, vuMax, current, PWM_Min, PWM_Max));
 		
 	}
@@ -235,7 +255,7 @@ void vuMeter() {
 		analogWrite(ledPins[2], PWM_Min);
 		
 	}
-	if (current >= abs(delta * 5.5 / 5)) {
+	if (current >= abs(delta * (vumeterFilter[2] / 10) / 5)) {
 		analogWrite(ledPins[3], mapValue(vuMin, vuMax, current, PWM_Min, PWM_Max));
 		
 	}
@@ -243,7 +263,7 @@ void vuMeter() {
 		analogWrite(ledPins[3], PWM_Min);
 		
 	}
-	if (current >= abs(delta * 4.6 / 5)) {
+	if (current >= abs(delta * (vumeterFilter[3] / 10) / 5)) {
 		analogWrite(ledPins[4], mapValue(vuMin, vuMax, current, PWM_Min, PWM_Max));
 		
 	}
@@ -262,7 +282,7 @@ void loop() {
 		vumeter = false;
 	}
 	server.handleClient();
-	if (loops++ >= 150) {
+	if (loops++ >= vumeterLoops) {
 		loops = 0;
 		if (vumeter) {
 			vuMeter();

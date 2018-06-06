@@ -1,7 +1,7 @@
 package com.georgems.george.iot.math;
 
-public class LinearTransform {
-    public LinearTransform(Interval interval1, Interval interval2){
+public class LinearTransformation {
+    public LinearTransformation(Interval interval1, Interval interval2){
         this.interval1 = interval1;
         this.interval2 = interval2;
     }

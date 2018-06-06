@@ -18,7 +18,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.georgems.george.iot.api.API;
 import com.georgems.george.iot.math.Interval;
-import com.georgems.george.iot.math.LinearTransform;
+import com.georgems.george.iot.math.LinearTransformation;
 
 import java.util.Random;
 
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < API.RGBWWControl.LEDCount; i++){
                     ledPWMValue_SeekBar[i].setProgress(random.nextInt(API.RGBWWControl.PWM_Max + 1));
                 }
-                String url = API.RGBWWControl.createPWMRequestString(new API.RGBWWControl.led[]{API.RGBWWControl.led.cw, API.RGBWWControl.led.r,API.RGBWWControl.led.g,API.RGBWWControl.led.b,API.RGBWWControl.led.ww}, new int[] {1023 - ledPWMValue_SeekBar[0].getProgress(), 1023 - ledPWMValue_SeekBar[1].getProgress(), 1023 - ledPWMValue_SeekBar[2].getProgress(), 1023 - ledPWMValue_SeekBar[3].getProgress(), 1023 - ledPWMValue_SeekBar[4].getProgress()});
+                String url = API.RGBWWControl.createPWMRequestString(new API.RGBWWControl.led[]{API.RGBWWControl.led.cw, API.RGBWWControl.led.r,API.RGBWWControl.led.g,API.RGBWWControl.led.b,API.RGBWWControl.led.ww}, new int[] {ledPWMValue_SeekBar[0].getProgress(), ledPWMValue_SeekBar[1].getProgress(), ledPWMValue_SeekBar[2].getProgress(), ledPWMValue_SeekBar[3].getProgress(), ledPWMValue_SeekBar[4].getProgress()});
                 setInfo(url);
                 GETRequest_Blank(url);
             }
@@ -152,8 +152,8 @@ public class MainActivity extends AppCompatActivity {
                 transformOrigin = seekBar.getProgress();
                 ignoreProgressChange = true;
                 for (int i = 0; i < API.RGBWWControl.LEDCount; i++) {
-                    positiveLinearTransforms[i] = new LinearTransform(new Interval(transformOrigin, seekBar.getMax()), new Interval(ledPWMValue_SeekBar[i].getProgress(), ledPWMValue_SeekBar[i].getMax()));
-                    negativeLinearTransforms[i] = new LinearTransform(new Interval(0, transformOrigin), new Interval(API.RGBWWControl.PWM_Min, ledPWMValue_SeekBar[i].getProgress()));
+                    positiveLinearTransformations[i] = new LinearTransformation(new Interval(transformOrigin, seekBar.getMax()), new Interval(ledPWMValue_SeekBar[i].getProgress(), ledPWMValue_SeekBar[i].getMax()));
+                    negativeLinearTransformations[i] = new LinearTransformation(new Interval(0, transformOrigin), new Interval(API.RGBWWControl.PWM_Min, ledPWMValue_SeekBar[i].getProgress()));
                 }
             }
 
@@ -167,13 +167,13 @@ public class MainActivity extends AppCompatActivity {
                                 ledPWMValue_SeekBar[i].setProgress(ledPWMValue_SeekBar[i].getMax());
                             }
                             else{
-                                ledPWMValue_SeekBar[i].setProgress((int)positiveLinearTransforms[i].calculateTransform(progress));
+                                ledPWMValue_SeekBar[i].setProgress((int) positiveLinearTransformations[i].calculateTransform(progress));
                             }
                         }
                     }
                     else {
                         for (int i = 0; i < API.RGBWWControl.LEDCount; i++){
-                            ledPWMValue_SeekBar[i].setProgress((int)negativeLinearTransforms[i].calculateTransform(progress));
+                            ledPWMValue_SeekBar[i].setProgress((int) negativeLinearTransformations[i].calculateTransform(progress));
                         }
                     }
                 }
@@ -181,6 +181,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mainLinearLayout.addView(ledBrightness_SeekBar);
+
+        vumeter_Button = new Button(this);
+        vumeter_Button.setText("Vumeter");
+        vumeter_Button.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < API.RGBWWControl.LEDCount; i++){
+                    String url = API.RGBWWControl.createSimpleRequestString(API.RGBWWControl.simpleCommand.switchVumeter);
+                    setInfo(url);
+                    GETRequest_Blank(url);
+                }
+            }
+        });
+        mainLinearLayout.addView(vumeter_Button);
+        final ViewGroup.MarginLayoutParams marginLayoutParams5 = (ViewGroup.MarginLayoutParams)vumeter_Button.getLayoutParams();
+        marginLayoutParams5.width = 200;
+        marginLayoutParams5.leftMargin = 20;
+
+        for (int i = 0; i < API.RGBWWControl.LEDCount; i++){
+            vufilter_TextView[i] = new TextView(this);
+            vufilter_TextView[i].setText(i * 10);
+            mainLinearLayout.addView(vufilter_TextView[i]);
+            final ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams)vufilter_TextView[i].getLayoutParams();
+            marginLayoutParams.leftMargin = 20;
+
+            vufilter_SeekBar[i] = new SeekBar(this);
+            vufilter_SeekBar[i].setMax(100);
+            vufilter_SeekBar[i].setProgress(i * 10);
+            vufilter_SeekBar[i].setTag(i);
+            vufilter_SeekBar[i].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    ignoreProgressChange = false;
+                    String url = API.RGBWWControl.createPWMRequestString(new API.RGBWWControl.led[]{API.RGBWWControl.led.cw, API.RGBWWControl.led.r,API.RGBWWControl.led.g,API.RGBWWControl.led.b,API.RGBWWControl.led.ww}, new int[] {1023 - ledPWMValue_SeekBar[0].getProgress(), 1023 - ledPWMValue_SeekBar[1].getProgress(), 1023 - ledPWMValue_SeekBar[2].getProgress(), 1023 - ledPWMValue_SeekBar[3].getProgress(), 1023 - ledPWMValue_SeekBar[4].getProgress()});
+                    setInfo(url);
+                    GETRequest_Blank(url);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int index = (int)seekBar.getTag();
+                    vufilter_TextView[index].setText(progress);
+                }
+            });
+            mainLinearLayout.addView(vufilter_SeekBar[i]);
+            final ViewGroup.MarginLayoutParams marginLayoutParams6 = (ViewGroup.MarginLayoutParams)vufilter_SeekBar[i].getLayoutParams();
+            marginLayoutParams6.leftMargin = 20;
+        }
     }
 
     //region Properties
@@ -193,12 +247,15 @@ public class MainActivity extends AppCompatActivity {
     Button randomColor_Button;
     Button allOff_Button;
     Button allOn_Button;
+    Button vumeter_Button;
+    SeekBar[] vufilter_SeekBar = new SeekBar[API.RGBWWControl.LEDCount];
+    TextView[] vufilter_TextView = new TextView[API.RGBWWControl.LEDCount];
 
     //Transforms and properties for handling the brightness seek bar changes.
     boolean ignoreProgressChange = false;
     int transformOrigin = 0;
-    LinearTransform[] positiveLinearTransforms = new LinearTransform[API.RGBWWControl.LEDCount];
-    LinearTransform[] negativeLinearTransforms = new LinearTransform[API.RGBWWControl.LEDCount];
+    LinearTransformation[] positiveLinearTransformations = new LinearTransformation[API.RGBWWControl.LEDCount];
+    LinearTransformation[] negativeLinearTransformations = new LinearTransformation[API.RGBWWControl.LEDCount];
 
 
     //region Methods
