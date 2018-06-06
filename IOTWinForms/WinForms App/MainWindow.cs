@@ -30,6 +30,14 @@ namespace WinForms_App
             {
                 IOTDevices = (List<IOT.IOTDevice>)SerializationHelper.DeserializeObject<List<IOT.IOTDevice>>(IOTDevicesFileName);
             }
+            if (IOTDevices == null || IOTDevices.Count == 0)
+            {
+                IOTDevices.Add(new IOT.IOTDevice()
+                {
+                    Name = "ESP8266_0",
+                    IPAddress = "10.1.0.101"
+                });
+            }
             RGBWWLED = new IOT.API.RGBWWLEDControl(IOTDevices?[0]);
             InitializeUI();
             RGBWWLED_TabPage.AutoScroll = true;
