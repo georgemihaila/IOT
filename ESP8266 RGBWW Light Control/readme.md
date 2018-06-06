@@ -43,3 +43,11 @@ http://ESP8266_IP/**vumeter**
 **Setting the vumeter minimum and maximum threshold (manual sensitivity calibration)**
 
 http://ESP8266_IP/**setvumeter**?***min=value0&max=value1***
+
+**Setting the vumeter loop frequency**
+
+http://ESP8266_IP/**setvumeter**?***vumeterloops=value***
+
+**Setting the vumeter filter values**
+
+http://ESP8266_IP/**setvumeter**?***vufilterX=value***
