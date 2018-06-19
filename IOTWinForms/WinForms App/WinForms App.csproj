@@ -50,7 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationConfiguration.cs" />
-    <Compile Include="IOT\API\RGBWWLEDControl.cs" />
+    <Compile Include="IOT\API\RGBWWLED\RGBWWLEDConfiguration.cs" />
+    <Compile Include="IOT\API\RGBWWLED\RGBWWLEDControl.cs" />
+    <Compile Include="IOT\API\RGBWWLED\VumeterConfiguration.cs" />
     <Compile Include="IOT\IOTDevice.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

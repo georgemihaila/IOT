@@ -30,6 +30,7 @@ namespace WinForms_App
             {
                 IOTDevices = (List<IOT.IOTDevice>)SerializationHelper.DeserializeObject<List<IOT.IOTDevice>>(IOTDevicesFileName);
             }
+#if DEBUG
             if (IOTDevices == null || IOTDevices.Count == 0)
             {
                 IOTDevices.Add(new IOT.IOTDevice()
@@ -38,7 +39,8 @@ namespace WinForms_App
                     IPAddress = "10.1.0.101"
                 });
             }
-            RGBWWLED = new IOT.API.RGBWWLEDControl(IOTDevices?[0]);
+#endif
+            RGBWWLED = new IOT.API.RGBWWLED.RGBWWLEDControl(IOTDevices?.Where(o => o.Name == "ESP8266_0").ToList()[0]);
             InitializeUI();
             RGBWWLED_TabPage.AutoScroll = true;
             VuLoops_SliderWithLabel.ScrollEnd += VuLoops_SliderWithLabel_ScrollEnd;
@@ -49,14 +51,24 @@ namespace WinForms_App
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (AutoSave_CheckBox.Checked)
+            AppConfiguration = new ApplicationConfiguration()
             {
-                AppConfiguration = new ApplicationConfiguration()
+                AutoSaveConfiguration = AutoSave_CheckBox.Checked,
+            };
+            if (AppConfiguration.AutoSaveConfiguration)
+            {
+                AppConfiguration.RGBWWLEDConfiguration = new IOT.API.RGBWWLED.RGBWWLEDConfiguration()
                 {
-                    AutoSaveConfiguration = true
+                    PWMValues = colorSliders.Select(o => o.Value).ToArray(),
+                    VumeterConfiguration = new IOT.API.RGBWWLED.VumeterConfiguration()
+                    {
+                        LoopSkip = VuLoops_SliderWithLabel.Value,
+                        Maximum = Vumax_SliderWithLabel.Value,
+                        Minimum = Vumin_SliderWithLabel.Value
+                    }
                 };
-                AppConfiguration.SerializeObject(ConfigurationFileName);
             }
+            AppConfiguration.SerializeObject(ConfigurationFileName);
             IOTDevices.SerializeObject(IOTDevicesFileName);
         }
 
@@ -87,13 +99,23 @@ namespace WinForms_App
 
                 colorSliders[i].ScrollEnd += async (sender, e) =>
                 {
-                    Status_Label.Text = await RGBWWLED.SetLEDValueAsync((IOT.API.RGBWWLEDControl.LED)(int)(sender as SliderWithLabel).Tag, e);
+                    Status_Label.Text = await RGBWWLED.SetLEDValueAsync((IOT.API.RGBWWLED.RGBWWLEDControl.LED)(int)(sender as SliderWithLabel).Tag, e);
                 };
 
                 RGBWWLED_TabPage.Controls.Add(colorSliders[i]);
                 colorSliders[i].Width = RandomColor_Button.Left + RandomColor_Button.Width - 10;
                 colorSliders[i].Left = 10;
                 colorSliders[i].Top = On_Button.Top + On_Button.Height + 10 + colorSliders[i].Height * i;
+                if (AppConfiguration.RGBWWLEDConfiguration != null)
+                {
+                    colorSliders[i].Value = AppConfiguration.RGBWWLEDConfiguration.PWMValues[i];
+                }
+            }
+            if (AppConfiguration.RGBWWLEDConfiguration?.VumeterConfiguration != null)
+            {
+                VuLoops_SliderWithLabel.Value = AppConfiguration.RGBWWLEDConfiguration.VumeterConfiguration.LoopSkip;
+                Vumin_SliderWithLabel.Value = AppConfiguration.RGBWWLEDConfiguration.VumeterConfiguration.Minimum;
+                Vumax_SliderWithLabel.Value = AppConfiguration.RGBWWLEDConfiguration.VumeterConfiguration.Maximum;
             }
         }
 
@@ -101,8 +123,8 @@ namespace WinForms_App
 
         #region Properties
 
-        private readonly string ConfigurationFileName = "config.xml";
-        private readonly string IOTDevicesFileName = "devices.xml";
+        private readonly string ConfigurationFileName = "Data/config.xml";
+        private readonly string IOTDevicesFileName = "Data/devices.xml";
         private string[] _RequiredDirectories;
         private string[] RequiredDirectories
         {
@@ -132,6 +154,7 @@ namespace WinForms_App
             set
             {
                 //TODO: update UI
+                AutoSave_CheckBox.Checked = value.AutoSaveConfiguration;
                 _AppConfiguration = value;
             }
         }
@@ -148,7 +171,7 @@ namespace WinForms_App
                 _IOTDevices = value;
             }
         }
-        IOT.API.RGBWWLEDControl RGBWWLED;
+        IOT.API.RGBWWLED.RGBWWLEDControl RGBWWLED;
         SliderWithLabel[] colorSliders = new SliderWithLabel[5];
         Random random = new Random();
 
@@ -207,7 +230,7 @@ namespace WinForms_App
                 {
                     colorSliders[i].Value = random.Next(0, 1024);
                 }
-                Status_Label.Text = await RGBWWLED.SetLEDValueAsync(new IOT.API.RGBWWLEDControl.LED[] { IOT.API.RGBWWLEDControl.LED.CW, IOT.API.RGBWWLEDControl.LED.R, IOT.API.RGBWWLEDControl.LED.G, IOT.API.RGBWWLEDControl.LED.B, IOT.API.RGBWWLEDControl.LED.WW }, new int[] { colorSliders[0].Value, colorSliders[1].Value, colorSliders[2].Value, colorSliders[3].Value, colorSliders[4].Value, });
+                Status_Label.Text = await RGBWWLED.SetLEDValueAsync(new IOT.API.RGBWWLED.RGBWWLEDControl.LED[] { IOT.API.RGBWWLED.RGBWWLEDControl.LED.CW, IOT.API.RGBWWLED.RGBWWLEDControl.LED.R, IOT.API.RGBWWLED.RGBWWLEDControl.LED.G, IOT.API.RGBWWLED.RGBWWLEDControl.LED.B, IOT.API.RGBWWLED.RGBWWLEDControl.LED.WW }, new int[] { colorSliders[0].Value, colorSliders[1].Value, colorSliders[2].Value, colorSliders[3].Value, colorSliders[4].Value, });
             }
             catch (Exception ex)
             {
@@ -238,17 +261,17 @@ namespace WinForms_App
 
         async private void VuLoops_SliderWithLabel_ScrollEnd(object sender, int e)
         {
-            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLEDControl.VumeterVariable.Vuloops, e);
+            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLED.RGBWWLEDControl.VumeterVariable.Vuloops, e);
         }
         
         async private void Vumax_SliderWithLabel_ScrollEnd(object sender, int e)
         {
-            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLEDControl.VumeterVariable.Vumax, e);
+            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLED.RGBWWLEDControl.VumeterVariable.Vumax, e);
         }
 
         async private void Vumin_SliderWithLabel_ScrollEnd(object sender, int e)
         {
-            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLEDControl.VumeterVariable.Vumin, e);
+            Status_Label.Text = await RGBWWLED.SetVumeterVariableAsync(IOT.API.RGBWWLED.RGBWWLEDControl.VumeterVariable.Vumin, e);
         }
 
         #endregion

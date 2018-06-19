@@ -28,18 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.RGBWWLED_TabPage = new System.Windows.Forms.TabPage();
+            this.Vumax_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
+            this.Vumin_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
+            this.VuLoops_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
+            this.SwitchVumeter_Button = new System.Windows.Forms.Button();
+            this.RandomColor_Button = new System.Windows.Forms.Button();
             this.On_Button = new System.Windows.Forms.Button();
             this.Off_Button = new System.Windows.Forms.Button();
             this.Settings_TabPage = new System.Windows.Forms.TabPage();
             this.AutoSave_CheckBox = new System.Windows.Forms.CheckBox();
             this.Status_Label = new System.Windows.Forms.Label();
-            this.RandomColor_Button = new System.Windows.Forms.Button();
-            this.SwitchVumeter_Button = new System.Windows.Forms.Button();
-            this.VuLoops_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
-            this.Vumin_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
-            this.Vumax_SliderWithLabel = new WinForms_App.UserControls.SliderWithLabel();
             this.MainTabControl.SuspendLayout();
             this.RGBWWLED_TabPage.SuspendLayout();
             this.Settings_TabPage.SuspendLayout();
@@ -74,6 +75,59 @@
             this.RGBWWLED_TabPage.TabIndex = 0;
             this.RGBWWLED_TabPage.Text = "RGBWW LED";
             this.RGBWWLED_TabPage.UseVisualStyleBackColor = true;
+            // 
+            // Vumax_SliderWithLabel
+            // 
+            this.Vumax_SliderWithLabel.Location = new System.Drawing.Point(277, 195);
+            this.Vumax_SliderWithLabel.Maximum = 500;
+            this.Vumax_SliderWithLabel.Minimum = 0;
+            this.Vumax_SliderWithLabel.Name = "Vumax_SliderWithLabel";
+            this.Vumax_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
+            this.Vumax_SliderWithLabel.TabIndex = 6;
+            this.Vumax_SliderWithLabel.Title = "Vumeter max";
+            this.Vumax_SliderWithLabel.Value = 200;
+            // 
+            // Vumin_SliderWithLabel
+            // 
+            this.Vumin_SliderWithLabel.Location = new System.Drawing.Point(277, 115);
+            this.Vumin_SliderWithLabel.Maximum = 500;
+            this.Vumin_SliderWithLabel.Minimum = 0;
+            this.Vumin_SliderWithLabel.Name = "Vumin_SliderWithLabel";
+            this.Vumin_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
+            this.Vumin_SliderWithLabel.TabIndex = 5;
+            this.Vumin_SliderWithLabel.Title = "Vumeter min";
+            this.Vumin_SliderWithLabel.Value = 100;
+            // 
+            // VuLoops_SliderWithLabel
+            // 
+            this.VuLoops_SliderWithLabel.Location = new System.Drawing.Point(277, 35);
+            this.VuLoops_SliderWithLabel.Maximum = 500;
+            this.VuLoops_SliderWithLabel.Minimum = 150;
+            this.VuLoops_SliderWithLabel.Name = "VuLoops_SliderWithLabel";
+            this.VuLoops_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
+            this.VuLoops_SliderWithLabel.TabIndex = 4;
+            this.VuLoops_SliderWithLabel.Title = "Vumeter loop skip";
+            this.VuLoops_SliderWithLabel.Value = 200;
+            // 
+            // SwitchVumeter_Button
+            // 
+            this.SwitchVumeter_Button.Location = new System.Drawing.Point(277, 6);
+            this.SwitchVumeter_Button.Name = "SwitchVumeter_Button";
+            this.SwitchVumeter_Button.Size = new System.Drawing.Size(113, 23);
+            this.SwitchVumeter_Button.TabIndex = 3;
+            this.SwitchVumeter_Button.Text = "Switch vumeter";
+            this.SwitchVumeter_Button.UseVisualStyleBackColor = true;
+            this.SwitchVumeter_Button.Click += new System.EventHandler(this.SwitchVumeter_button_Click);
+            // 
+            // RandomColor_Button
+            // 
+            this.RandomColor_Button.Location = new System.Drawing.Point(168, 6);
+            this.RandomColor_Button.Name = "RandomColor_Button";
+            this.RandomColor_Button.Size = new System.Drawing.Size(103, 23);
+            this.RandomColor_Button.TabIndex = 2;
+            this.RandomColor_Button.Text = "Set random color";
+            this.RandomColor_Button.UseVisualStyleBackColor = true;
+            this.RandomColor_Button.Click += new System.EventHandler(this.RandomColor_Button_Click);
             // 
             // On_Button
             // 
@@ -128,59 +182,6 @@
             this.Status_Label.TabIndex = 1;
             this.Status_Label.Text = "Ok";
             // 
-            // RandomColor_Button
-            // 
-            this.RandomColor_Button.Location = new System.Drawing.Point(168, 6);
-            this.RandomColor_Button.Name = "RandomColor_Button";
-            this.RandomColor_Button.Size = new System.Drawing.Size(103, 23);
-            this.RandomColor_Button.TabIndex = 2;
-            this.RandomColor_Button.Text = "Set random color";
-            this.RandomColor_Button.UseVisualStyleBackColor = true;
-            this.RandomColor_Button.Click += new System.EventHandler(this.RandomColor_Button_Click);
-            // 
-            // SwitchVumeter_Button
-            // 
-            this.SwitchVumeter_Button.Location = new System.Drawing.Point(277, 6);
-            this.SwitchVumeter_Button.Name = "SwitchVumeter_Button";
-            this.SwitchVumeter_Button.Size = new System.Drawing.Size(113, 23);
-            this.SwitchVumeter_Button.TabIndex = 3;
-            this.SwitchVumeter_Button.Text = "Switch vumeter";
-            this.SwitchVumeter_Button.UseVisualStyleBackColor = true;
-            this.SwitchVumeter_Button.Click += new System.EventHandler(this.SwitchVumeter_button_Click);
-            // 
-            // VuLoops_SliderWithLabel
-            // 
-            this.VuLoops_SliderWithLabel.Location = new System.Drawing.Point(277, 35);
-            this.VuLoops_SliderWithLabel.Maximum = 500;
-            this.VuLoops_SliderWithLabel.Minimum = 150;
-            this.VuLoops_SliderWithLabel.Name = "VuLoops_SliderWithLabel";
-            this.VuLoops_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
-            this.VuLoops_SliderWithLabel.TabIndex = 4;
-            this.VuLoops_SliderWithLabel.Title = "Vumeter loop skip";
-            this.VuLoops_SliderWithLabel.Value = 200;
-            // 
-            // Vumin_SliderWithLabel
-            // 
-            this.Vumin_SliderWithLabel.Location = new System.Drawing.Point(277, 115);
-            this.Vumin_SliderWithLabel.Maximum = 500;
-            this.Vumin_SliderWithLabel.Minimum = 0;
-            this.Vumin_SliderWithLabel.Name = "Vumin_SliderWithLabel";
-            this.Vumin_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
-            this.Vumin_SliderWithLabel.TabIndex = 5;
-            this.Vumin_SliderWithLabel.Title = "Vumeter min";
-            this.Vumin_SliderWithLabel.Value = 100;
-            // 
-            // Vumax_SliderWithLabel
-            // 
-            this.Vumax_SliderWithLabel.Location = new System.Drawing.Point(277, 195);
-            this.Vumax_SliderWithLabel.Maximum = 500;
-            this.Vumax_SliderWithLabel.Minimum = 0;
-            this.Vumax_SliderWithLabel.Name = "Vumax_SliderWithLabel";
-            this.Vumax_SliderWithLabel.Size = new System.Drawing.Size(165, 74);
-            this.Vumax_SliderWithLabel.TabIndex = 6;
-            this.Vumax_SliderWithLabel.Title = "Vumeter max";
-            this.Vumax_SliderWithLabel.Value = 200;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -188,7 +189,9 @@
             this.ClientSize = new System.Drawing.Size(800, 477);
             this.Controls.Add(this.Status_Label);
             this.Controls.Add(this.MainTabControl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "IOT";
             this.MainTabControl.ResumeLayout(false);
             this.RGBWWLED_TabPage.ResumeLayout(false);

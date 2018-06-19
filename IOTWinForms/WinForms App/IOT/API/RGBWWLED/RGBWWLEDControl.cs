@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinForms_App.IOT.API
+namespace WinForms_App.IOT.API.RGBWWLED
 {
     /// <summary>
     /// An API for managing an RGBWW LED.

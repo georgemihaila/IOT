@@ -5,12 +5,13 @@
 #define PWM_Max 1023
 
 #define SSID "George"
-#define Password "$"
+#define Password "$ComplicatedHOST"
 
 ESP8266WebServer server(80);;
 
 byte ledPins[] = { 14, 15, 16, 12, 13 };
 int pwmValues[] = { 0, 0, 0, 0, 0 };
+byte fanPin = 5;
 
 float vuMin = 56;
 float vuMax = 228;
@@ -42,12 +43,44 @@ void turnOffAllLEDs() {
 	for (int i = 0; i < 5; i++) {
 		turnOffLED(i);
 	}
+	turnOffFan();
+}
+
+int pwmAverage() {
+	int sum = 0;
+	for (int i = 0; i < 5; i++)
+		sum += pwmValues[i];
+	return sum / 5;
+}
+
+void turnOnFan() {
+	analogWrite(fanPin, PWM_Max);
+}
+
+void turnOffFan() {
+	analogWrite(fanPin, PWM_Min);
+}
+
+void turnOnFan_Server() {
+	turnOnFan();
+	server.send(200, "text/plain", "Fan on.");
+}
+
+void turnOffFan_Server() {
+	if (pwmAverage() < 1024 / 3) {
+		turnOffFan();
+		server.send(200, "text/plain", "Fan off.");
+	}
+	else {
+		server.send(200, "text/plain", "Impossible.");
+	}
 }
 
 void turnOffAllLEDs_Server() {
 	for (int i = 0; i < 5; i++) {
 		turnOffLED(i);
 	}
+	turnOffFan();
 	server.send(200, "text/plain", "LEDs off");
 }
 
@@ -55,12 +88,14 @@ void turnOnAllLEDs() {
 	for (int i = 0; i < 5; i++) {
 		turnOnLED(i);
 	}
+	turnOnFan();
 }
 
 void turnOnAllLEDs_Server() {
 	for (int i = 0; i < 5; i++) {
 		turnOnLED(i);
 	}
+	turnOnFan();
 	server.send(200, "text/plain", "LEDs on");
 }
 
@@ -118,7 +153,12 @@ void handlePWMRequest_Server() {
 			handled = true;
 		}
 	}
-
+	if (pwmAverage() < 1024 / 3) {
+		turnOffFan();
+	}
+	else {
+		turnOnFan();
+	}
 	if (!handled) {
 		server.send(400, "text/plain", "Wrong arguments.");
 	}
@@ -188,6 +228,8 @@ ulong formerus = 0;
 
 void setup() {
 	setupLEDs();
+	pinMode(fanPin, OUTPUT);
+	turnOffFan();
 	Serial.begin(9600);
 	Serial.println("OK");
 	WiFi.begin(SSID, Password);
@@ -200,6 +242,8 @@ void setup() {
 	server.on("/restart", handleRestart_Server);
 	server.on("/vumeter", switchVumeter_Server);
 	server.on("/setvumeter", setVumeter_Server);
+	server.on("/fanon", turnOnFan_Server);
+	server.on("/fanoff", turnOffFan_Server);
 	server.begin();
 	for (int i = 0; i < 5; i++) {
 		analogWrite(ledPins[i], 512);
