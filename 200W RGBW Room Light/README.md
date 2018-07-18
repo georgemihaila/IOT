@@ -4,7 +4,7 @@
 
 This is a room light made out of 4 50W LEDs, controlled with an ESP8266. The LEDs are cooled automatically, based on their heatsink's temperature.
 
-## Materials required
+## Materials used
 
 -[4 x 50W LEDs (Red, Green, Blue, White)](https://www.aliexpress.com/item/10W-20W-30W-50W-100W-RGB-LED-light-COB-Integrated-Diodes-chip-lamp-Bulb-For-Flood/32822751209.html?spm=a2g0s.9042311.0.0.15e74c4djlJp3c) - $13.2
 
